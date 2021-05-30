@@ -1,5 +1,6 @@
 package com.rsschool.android2021
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ class SecondFragment : Fragment() {
 
     private var backButton: Button? = null
     private var result: TextView? = null
+    private var intListener: FragmentsInterface? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -19,6 +21,11 @@ class SecondFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_second, container, false)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        intListener = context as FragmentsInterface
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,16 +36,20 @@ class SecondFragment : Fragment() {
         val min = arguments?.getInt(MIN_VALUE_KEY) ?: 0
         val max = arguments?.getInt(MAX_VALUE_KEY) ?: 0
 
-        result?.text = generate(min, max).toString()
+        val resNumber = generate(min, max)
+        result?.text = resNumber.toString()
 
         backButton?.setOnClickListener {
-            // TODO: implement back
+            intListener?.onBackToFirst(resNumber)
         }
     }
 
     private fun generate(min: Int, max: Int): Int {
-        // TODO: generate random number
-        return 0
+        return (min..max).random()
+    }
+
+    fun getResult():Int{
+        return result?.text.toString().toInt()
     }
 
     companion object {
@@ -48,7 +59,9 @@ class SecondFragment : Fragment() {
             val fragment = SecondFragment()
             val args = Bundle()
 
-            // TODO: implement adding arguments
+            args.putInt(MIN_VALUE_KEY,min)
+            args.putInt(MAX_VALUE_KEY,max)
+            fragment.arguments = args
 
             return fragment
         }
